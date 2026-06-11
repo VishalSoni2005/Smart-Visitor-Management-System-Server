@@ -1,0 +1,115 @@
+service: visitor-management-backend
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-south-1
+  stage: dev
+  environment:
+    DYNAMODB_REGION: ${self:provider.region}
+    VISITORS_TABLE: ${env:VISITORS_TABLE, 'visitors'}
+    ADMINS_TABLE: ${env:ADMINS_TABLE, 'admins'}
+    S3_BUCKET_NAME: ${env:S3_BUCKET_NAME, 'visitor-management-assets-dev'}
+    JWT_SECRET: ${env:JWT_SECRET}
+    FRONTEND_URL: ${env:FRONTEND_URL, 'http://localhost:3000'}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:Scan
+            - dynamodb:Query
+          Resource:
+            - arn:aws:dynamodb:ap-south-1:*:table/visitors
+            - arn:aws:dynamodb:ap-south-1:*:table/admins
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:PutObjectAcl
+          Resource:
+            - arn:aws:s3:::visitor-management-assets-dev/*
+
+functions:
+  adminLogin:
+    handler: dist/backend/handlers/adminLogin.handler
+    events:
+      - http:
+          path: auth/login
+          method: post
+          cors: true
+
+  createVisitor:
+    handler: dist/backend/handlers/createVisitor.handler
+    events:
+      - http:
+          path: visitors
+          method: post
+          cors: true
+
+  getVisitors:
+    handler: dist/backend/handlers/getVisitors.handler
+    events:
+      - http:
+          path: visitors
+          method: get
+          cors: true
+
+  getVisitorById:
+    handler: dist/backend/handlers/getVisitorById.handler
+    events:
+      - http:
+          path: visitors/{id}
+          method: get
+          cors: true
+
+  checkoutVisitor:
+    handler: dist/backend/handlers/checkoutVisitor.handler
+    events:
+      - http:
+          path: visitors/{id}/checkout
+          method: patch
+          cors: true
+
+plugins:
+  # If compiling TS dynamically at deploy time
+  # - serverless-plugin-typescript
+
+resources:
+  Resources:
+    VisitorsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: visitors
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: visitorId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: visitorId
+            KeyType: HASH
+
+    AdminsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: admins
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+
+    AssetsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: visitor-management-assets-${self:provider.stage}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          IgnorePublicAcls: false
+          BlockPublicPolicy: false
+          RestrictPublicBuckets: false
