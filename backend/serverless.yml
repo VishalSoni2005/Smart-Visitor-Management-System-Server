@@ -16,7 +16,7 @@ provider:
     FRONTEND_URL: ${env:FRONTEND_URL, 'http://localhost:3000'}
   apiGateway:
     binaryMediaTypes:
-      - 'multipart/form-data'
+      - "multipart/form-data"
   iam:
     role:
       statements:
@@ -78,10 +78,6 @@ functions:
           path: visitors/{id}/checkout
           method: patch
           cors: true
-
-plugins:
-  # If compiling TS dynamically at deploy time
-  # - serverless-plugin-typescript
 
 resources:
   Resources:
