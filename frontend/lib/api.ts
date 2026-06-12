@@ -1,4 +1,4 @@
-import { ApiResponse } from "../../shared/types";
+import { ApiResponse } from "../shared/types";
 import { getToken } from "./auth";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
@@ -35,8 +35,6 @@ async function request<T>(
 
   try {
     const response = await fetch(url, options);
-    
-    // Parse response
     const json = await response.json();
     
     if (!response.ok) {

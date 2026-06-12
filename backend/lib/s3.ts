@@ -26,6 +26,8 @@ export async function uploadPhoto(
 
   const key = `photos/${visitorId}.${ext}`;
 
+  console.log("key", key);
+
   try {
     const command = new PutObjectCommand({
       Bucket: S3_BUCKET_NAME,
@@ -33,6 +35,9 @@ export async function uploadPhoto(
       Body: photoBuffer,
       ContentType: contentType,
     });
+
+    console.log("command for file upload: ", command);
+
     await getS3Client().send(command);
     return `https://${S3_BUCKET_NAME}.s3.${REGION}.amazonaws.com/${key}`;
   } catch (error) {

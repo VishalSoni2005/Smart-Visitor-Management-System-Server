@@ -18,7 +18,7 @@ export const handler = async (
 
   try {
     // JWT Authentication check
-    const authHeader = event.headers.Authorization || event.headers.authorization;
+    const authHeader = event.headers?.Authorization || event.headers?.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return {
         statusCode: 401,

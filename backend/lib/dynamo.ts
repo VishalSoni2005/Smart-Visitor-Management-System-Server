@@ -5,7 +5,7 @@ import {
   PutCommand,
   ScanCommand,
 } from "@aws-sdk/lib-dynamodb";
-import { Visitor, Admin } from "../../shared/types";
+import type { Visitor, Admin } from "../../frontend/shared/types";
 
 const REGION = process.env.DYNAMODB_REGION || "ap-south-1";
 const VISITORS_TABLE = process.env.VISITORS_TABLE || "visitors";

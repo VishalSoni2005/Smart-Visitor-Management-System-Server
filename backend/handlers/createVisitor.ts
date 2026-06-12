@@ -5,7 +5,35 @@ import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { saveVisitor } from "../lib/dynamo";
 import { uploadPhoto, uploadGatePass } from "../lib/s3";
 import { parseMultipart } from "../lib/multipart";
-import { Visitor } from "../../shared/types";
+// import type { Visitor } from "../../frontend/shared/types";
+
+export interface Visitor {
+  visitorId: string;
+  name: string;
+  phone: string;
+  email?: string;
+  purpose: "Meeting" | "Interview" | "Delivery" | "Other";
+  hostName: string;
+  hostDepartment: string;
+  photoUrl: string;
+  gatePassUrl: string;
+  visitorToken: string;
+  status: "checked-in" | "checked-out";
+  checkInTime: string;
+  checkOutTime: string | null;
+  createdAt: string;
+}
+
+export interface Admin {
+  email: string;
+  passwordHash: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
 
 const HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -47,6 +75,8 @@ export const handler = async (
         }),
       };
     }
+
+    console.log("event", event);
 
     const bodyBuffer = event.isBase64Encoded
       ? Buffer.from(event.body || "", "base64")
@@ -90,7 +120,7 @@ export const handler = async (
     const photoUrl = await uploadPhoto(
       visitorId,
       photoFile.content,
-      photoFile.contentType
+      photoFile.contentType,
     );
 
     // 2. Generate QR Code

@@ -2,7 +2,13 @@
 
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { Camera, ClipboardList, ShieldAlert, Loader2, ArrowRight } from "lucide-react";
+import {
+  Camera,
+  ClipboardList,
+  ShieldAlert,
+  Loader2,
+  ArrowRight,
+} from "lucide-react";
 import { api } from "@/lib/api";
 import { Visitor } from "@/shared/types";
 import WebcamCapture from "@/components/WebcamCapture";
@@ -43,7 +49,9 @@ export default function CheckInPage() {
     }
 
     setLoading(true);
-    const toastId = toast.loading("Processing your check-in, generating gate pass...");
+    const toastId = toast.loading(
+      "Processing your check-in, generating gate pass...",
+    );
 
     try {
       const formData = new FormData();
@@ -63,16 +71,30 @@ export default function CheckInPage() {
       const ext = mimeType.split("/")[1] || "jpeg";
       formData.append("photo", blob, `photo.${ext}`);
 
+      console.log(
+        "formData",
+        Array.from(formData.entries()).map(([key, value]) => ({
+          key,
+          value,
+        })),
+      );
+
       const response = await api.post<Visitor>("/visitors", formData);
+
+      console.log("response", response);
 
       if (response.success && response.data) {
         toast.success("Checked in successfully!", { id: toastId });
         setIssuedVisitor(response.data);
       } else {
-        toast.error(response.error || "Failed to process check-in.", { id: toastId });
+        toast.error(response.error || "Failed to process check-in.", {
+          id: toastId,
+        });
       }
     } catch (err: any) {
-      toast.error(err.message || "An error occurred during submission.", { id: toastId });
+      toast.error(err.message || "An error occurred during submission.", {
+        id: toastId,
+      });
     } finally {
       setLoading(false);
     }
@@ -94,7 +116,7 @@ export default function CheckInPage() {
       <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-slate-50">
         <div className="w-full max-w-md">
           <GatePass visitor={issuedVisitor} />
-          
+
           <button
             type="button"
             onClick={resetForm}
@@ -118,7 +140,8 @@ export default function CheckInPage() {
               Visitor Check-In
             </h1>
             <p className="text-sm text-slate-500 mt-1">
-              Please fill in your details and capture a photo to receive your visitor pass.
+              Please fill in your details and capture a photo to receive your
+              visitor pass.
             </p>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-500/10 text-blue-700 border border-blue-500/20">
@@ -128,7 +151,10 @@ export default function CheckInPage() {
         </div>
 
         {/* Form Grid */}
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+        >
           {/* Webcam Section (5 columns on lg) */}
           <div className="lg:col-span-5 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-100 pb-8 lg:pb-0 lg:pr-8">
             <label className="text-sm font-bold text-slate-700 block mb-3 text-center uppercase tracking-wider">
@@ -150,7 +176,10 @@ export default function CheckInPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Full Name */}
               <div className="col-span-1 sm:col-span-2">
-                <label htmlFor="name" className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5">
+                <label
+                  htmlFor="name"
+                  className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5"
+                >
                   Full Name <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -166,7 +195,10 @@ export default function CheckInPage() {
 
               {/* Phone */}
               <div>
-                <label htmlFor="phone" className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5">
+                <label
+                  htmlFor="phone"
+                  className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5"
+                >
                   Phone Number <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -182,8 +214,12 @@ export default function CheckInPage() {
 
               {/* Email */}
               <div>
-                <label htmlFor="email" className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5">
-                  Email Address <span className="text-slate-400">(Optional)</span>
+                <label
+                  htmlFor="email"
+                  className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5"
+                >
+                  Email Address{" "}
+                  <span className="text-slate-400">(Optional)</span>
                 </label>
                 <input
                   type="email"
@@ -197,13 +233,18 @@ export default function CheckInPage() {
 
               {/* Purpose */}
               <div className="col-span-1 sm:col-span-2">
-                <label htmlFor="purpose" className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5">
+                <label
+                  htmlFor="purpose"
+                  className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5"
+                >
                   Purpose of Visit <span className="text-rose-500">*</span>
                 </label>
                 <select
                   id="purpose"
                   value={purpose}
-                  onChange={(e) => setPurpose(e.target.value as Visitor["purpose"])}
+                  onChange={(e) =>
+                    setPurpose(e.target.value as Visitor["purpose"])
+                  }
                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:bg-white text-sm transition-all duration-150"
                 >
                   <option value="Meeting">Meeting / Discussion</option>
@@ -215,7 +256,10 @@ export default function CheckInPage() {
 
               {/* Host Name */}
               <div>
-                <label htmlFor="hostName" className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5">
+                <label
+                  htmlFor="hostName"
+                  className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5"
+                >
                   Host Employee Name <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -231,7 +275,10 @@ export default function CheckInPage() {
 
               {/* Host Department */}
               <div>
-                <label htmlFor="hostDept" className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5">
+                <label
+                  htmlFor="hostDept"
+                  className="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-1.5"
+                >
                   Host Department <span className="text-rose-500">*</span>
                 </label>
                 <input

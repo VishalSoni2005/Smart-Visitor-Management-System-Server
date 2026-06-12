@@ -16,6 +16,7 @@ export const handler = async (
   }
 
   try {
+    const authHeader = event.headers?.Authorization || event.headers?.authorization;
     const id = event.pathParameters?.id;
 
     if (!id) {
