@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "iTrace - Corporate Visitor Management System",
-  description: "Modern, secure corporate visitor check-in, gate pass issuance, and administrative control panel.",
+  title: "vTrace - Corporate Visitor Management System",
+  description:
+    "Modern, secure corporate visitor check-in, gate pass issuance, and administrative control panel.",
 };
 
 export default function RootLayout({
@@ -45,4 +46,3 @@ export default function RootLayout({
     </html>
   );
 }
-

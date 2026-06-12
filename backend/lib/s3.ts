@@ -16,7 +16,7 @@ function getS3Client() {
 export async function uploadPhoto(
   visitorId: string,
   photoBuffer: Buffer,
-  contentType: string
+  contentType: string,
 ): Promise<string> {
   // Determine file extension based on MIME type
   let ext = "jpg";
@@ -46,7 +46,10 @@ export async function uploadPhoto(
   }
 }
 
-export async function uploadGatePass(visitorId: string, pdfBuffer: Buffer): Promise<string> {
+export async function uploadGatePass(
+  visitorId: string,
+  pdfBuffer: Buffer,
+): Promise<string> {
   const key = `gatepasses/${visitorId}.pdf`;
 
   try {
@@ -56,7 +59,14 @@ export async function uploadGatePass(visitorId: string, pdfBuffer: Buffer): Prom
       Body: pdfBuffer,
       ContentType: "application/pdf",
     });
+
+    console.log("command for gatepass upload: ", command);
+
     await getS3Client().send(command);
+    console.log(
+      "==> Gatepass pdf LINK: ",
+      `https://${S3_BUCKET_NAME}.s3.${REGION}.amazonaws.com/${key}`,
+    );
     return `https://${S3_BUCKET_NAME}.s3.${REGION}.amazonaws.com/${key}`;
   } catch (error) {
     console.error("S3 uploadGatePass error:", error);

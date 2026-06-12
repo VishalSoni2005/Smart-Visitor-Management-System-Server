@@ -8,11 +8,14 @@ import {
   ShieldAlert,
   Loader2,
   ArrowRight,
+  Shield,
+  SquareArrowRightExit,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { Visitor } from "@/shared/types";
 import WebcamCapture from "@/components/WebcamCapture";
 import GatePass from "@/components/GatePass";
+import Link from "next/link";
 
 export default function CheckInPage() {
   // Form State
@@ -66,6 +69,9 @@ export default function CheckInPage() {
 
       // Convert webcam base64 capture to a binary blob
       const res = await fetch(photo);
+
+      console.log("Photo prefix:", photo.substring(0, 50));
+
       const blob = await res.blob();
       const mimeType = photo.split(";")[0].split(":")[1] || "image/jpeg";
       const ext = mimeType.split("/")[1] || "jpeg";
@@ -128,9 +134,47 @@ export default function CheckInPage() {
       </main>
     );
   }
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center py-12 px-4 bg-slate-50 sm:px-6 lg:px-8">
+      {/* Header with Admin Button */}
+      <div className="w-full max-w-4xl mb-6 flex justify-start gap-4">
+        <div className="relative group">
+          <Link
+            href="/checkout"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-white text-sm font-medium rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 group"
+          >
+            <SquareArrowRightExit className="h-4 w-4" />
+            <span>Visitor Check-out</span>
+          </Link>
+
+          {/* Tooltip */}
+          <div className="absolute right-0 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+            <div className="bg-slate-800 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg">
+              Checkout the visitor.
+              <div className="absolute -top-1 right-4 w-2 h-2 bg-slate-800 rotate-45"></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative group">
+          <Link
+            href="/admin/login"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-white text-sm font-medium rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 group"
+          >
+            <Shield className="h-4 w-4" />
+            <span>Admin Login</span>
+          </Link>
+
+          {/* Tooltip */}
+          <div className="absolute right-0 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+            <div className="bg-slate-800 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg">
+              🔐 Admin only - Monitor check-ins & manage visitors
+              <div className="absolute -top-1 right-4 w-2 h-2 bg-slate-800 rotate-45"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="w-full max-w-4xl bg-white border border-slate-250/60 rounded-3xl p-6 sm:p-10 shadow-xl">
         {/* Title Section */}
         <div className="text-center sm:text-left border-b border-slate-100 pb-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -186,7 +230,7 @@ export default function CheckInPage() {
                   type="text"
                   id="name"
                   required
-                  placeholder="John Doe"
+                  placeholder="Vishal Soni"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:bg-white text-sm transition-all duration-150"
@@ -205,7 +249,7 @@ export default function CheckInPage() {
                   type="tel"
                   id="phone"
                   required
-                  placeholder="+1 (555) 000-0000"
+                  placeholder="+91 9876543210"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:bg-white text-sm transition-all duration-150"
@@ -224,7 +268,7 @@ export default function CheckInPage() {
                 <input
                   type="email"
                   id="email"
-                  placeholder="john.doe@example.com"
+                  placeholder="vishal@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:bg-white text-sm transition-all duration-150"
@@ -266,7 +310,7 @@ export default function CheckInPage() {
                   type="text"
                   id="hostName"
                   required
-                  placeholder="Jane Smith"
+                  placeholder="Cybernetics"
                   value={hostName}
                   onChange={(e) => setHostName(e.target.value)}
                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:bg-white text-sm transition-all duration-150"

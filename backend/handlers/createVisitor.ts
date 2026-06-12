@@ -5,7 +5,6 @@ import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { saveVisitor } from "../lib/dynamo";
 import { uploadPhoto, uploadGatePass } from "../lib/s3";
 import { parseMultipart } from "../lib/multipart";
-// import type { Visitor } from "../../frontend/shared/types";
 
 export interface Visitor {
   visitorId: string;
@@ -57,6 +56,8 @@ function generateToken(): string {
 export const handler = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
+  console.log("event for creating visition: ", event);
+
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 200, headers: HEADERS, body: "" };
   }
@@ -76,7 +77,7 @@ export const handler = async (
       };
     }
 
-    console.log("event", event);
+    console.log("event for creating visition: ", event);
 
     const bodyBuffer = event.isBase64Encoded
       ? Buffer.from(event.body || "", "base64")
@@ -91,6 +92,15 @@ export const handler = async (
     const hostName = fields.hostName;
     const hostDepartment = fields.hostDepartment;
     const photoFile = files.photo;
+
+    console.log("photo filename:", photoFile.filename);
+    console.log("photo contentType:", photoFile.contentType);
+    console.log("photo size:", photoFile.content.length);
+
+    console.log(
+      "photo signature:",
+      photoFile.content.subarray(0, 20).toString("hex"),
+    );
 
     // Validate inputs
     if (
@@ -122,6 +132,8 @@ export const handler = async (
       photoFile.content,
       photoFile.contentType,
     );
+
+    console.log("Photo url of S3: ", photoUrl);
 
     // 2. Generate QR Code
     const checkoutUrl = `${FRONTEND_URL}/checkout?token=${visitorToken}`;
@@ -172,12 +184,27 @@ export const handler = async (
     });
 
     // Embed Visitor Photo (JPEG or PNG)
-    let photoImage;
-    if (photoFile.contentType.includes("png")) {
-      photoImage = await pdfDoc.embedPng(photoFile.content);
-    } else {
-      photoImage = await pdfDoc.embedJpg(photoFile.content);
-    }
+    // let photoImage;
+    // if (photoFile.contentType.includes("png")) {
+    //   photoImage = await pdfDoc.embedPng(photoFile.content);
+    // } else {
+    //   console.log("contentType:", photoFile.contentType);
+
+    //   console.log(
+    //     "before embedJpg signature:",
+    //     photoFile.content.subarray(0, 20).toString("hex"),
+    //   );
+
+    //   console.log(
+    //     "before embedJpg trailer:",
+    //     photoFile.content
+    //       .subarray(photoFile.content.length - 10)
+    //       .toString("hex"),
+    //   );
+    //   photoImage = await pdfDoc.embedJpg(photoFile.content);
+    // }
+
+    console.log("Skipping photo embedding");
 
     // Draw photo container border & photo
     page.drawRectangle({
@@ -187,12 +214,12 @@ export const handler = async (
       height: 100,
       color: lightGray,
     });
-    page.drawImage(photoImage, {
-      x: width / 2 - 46,
-      y: height - 186,
-      width: 92,
-      height: 92,
-    });
+    // page.drawImage(photoImage, {
+    //   x: width / 2 - 46,
+    //   y: height - 186,
+    //   width: 92,
+    //   height: 92,
+    // });
 
     // Draw fields
     const drawField = (label: string, value: string, yPos: number) => {
